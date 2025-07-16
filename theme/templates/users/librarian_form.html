@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="p-6">
+    <div class="max-w-2xl mx-auto">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-gray-900">{{ title }}</h1>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mb-4 p-4 rounded-lg {% if message.tags == 'success' %}bg-green-100 text-green-700 border border-green-400{% elif message.tags == 'error' %}bg-red-100 text-red-700 border border-red-400{% else %}bg-blue-100 text-blue-700 border border-blue-400{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="space-y-6">
+                    <div>
+                        <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Username
+                        </label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ form.username.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Email
+                        </label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ form.email.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            First Name
+                        </label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ form.first_name.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Last Name
+                        </label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ form.last_name.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.phone_number.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Phone Number
+                        </label>
+                        {{ form.phone_number }}
+                        {% if form.phone_number.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ form.phone_number.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    {% if not form.instance.pk %}
+                    <div>
+                        <label for="{{ form.password1.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Password
+                        </label>
+                        {{ form.password1 }}
+                        {% if form.password1.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ form.password1.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.password2.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Confirm Password
+                        </label>
+                        {{ form.password2 }}
+                        {% if form.password2.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ form.password2.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <div class="flex justify-end space-x-3">
+                        <a href="{% url 'users:librarian_list' %}" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200">
+                            Cancel
+                        </a>
+                        <button type="submit" class="px-4 py-2 bg-[#FF8A65] hover:bg-[#FF7043] text-white rounded-lg transition duration-200">
+                            Save Librarian
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

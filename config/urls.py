@@ -24,6 +24,8 @@ urlpatterns = [
     path("__reload__/", include("django_browser_reload.urls")),
     path('', include('library.urls')),
     path('users/', include('users.urls')),
+    path('branches/', include('branches.urls')),
+    path('reports/', include('reports.urls')),
 ]
 
 if settings.DEBUG:

@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="p-6">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Revenue Report</h1>
+        <p class="text-gray-600 mt-2">Fines and revenue data from {{ start_date }} to {{ end_date }}</p>
+    </div>
+
+    <!-- Date Range Filter -->
+    <div class="bg-white shadow-md rounded-lg p-4 mb-6">
+        <form method="get" class="flex items-center space-x-4">
+            <label for="days" class="text-sm font-medium text-gray-700">Time Period:</label>
+            <select name="days" id="days" class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#FF8A65]">
+                <option value="7" {% if days == 7 %}selected{% endif %}>Last 7 days</option>
+                <option value="30" {% if days == 30 %}selected{% endif %}>Last 30 days</option>
+                <option value="90" {% if days == 90 %}selected{% endif %}>Last 90 days</option>
+                <option value="365" {% if days == 365 %}selected{% endif %}>Last year</option>
+            </select>
+            <button type="submit" class="bg-[#FF8A65] hover:bg-[#FF7043] text-white px-4 py-2 rounded-lg transition duration-200">
+                Update Report
+            </button>
+        </form>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Total Revenue</p>
+                    <p class="text-2xl font-bold text-gray-900">${{ total_revenue }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Unpaid Amount</p>
+                    <p class="text-2xl font-bold text-gray-900">${{ unpaid_amount }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Total Fines</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ total_fines }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Paid Fines</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ paid_fines }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fines by Amount Range -->
+    <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Fines by Amount Range</h2>
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+            {% for range_info in fines_by_range %}
+            <div class="text-center">
+                <div class="text-2xl font-bold text-gray-900">{{ range_info.count }}</div>
+                <div class="text-sm text-gray-600">{{ range_info.range }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Daily Revenue Chart -->
+    <div class="bg-white shadow-md rounded-lg p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Daily Revenue Trends</h2>
+        <div class="space-y-2">
+            {% for day in daily_fines %}
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">{{ day.day }}</span>
+                <div class="flex items-center">
+                    <div class="w-32 bg-gray-200 rounded-full h-2 mr-2">
+                        <div class="bg-[#FF8A65] h-2 rounded-full" style="width: {% widthratio day.total total_revenue 100 %}%"></div>
+                    </div>
+                    <span class="text-sm font-medium text-gray-900">${{ day.total }}</span>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-sm text-gray-500 text-center">No daily revenue data available.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %} 
