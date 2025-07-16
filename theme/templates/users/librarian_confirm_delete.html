@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="p-6">
+    <div class="max-w-md mx-auto">
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <h1 class="text-xl font-bold text-gray-900 mb-4">Delete Librarian</h1>
+            
+            <p class="text-gray-600 mb-6">
+                Are you sure you want to delete the librarian account for "<strong>{{ librarian.get_full_name|default:librarian.username }}</strong>"?
+                This action cannot be undone.
+            </p>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="flex justify-end space-x-3">
+                    <a href="{% url 'users:librarian_list' %}" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200">
+                        Cancel
+                    </a>
+                    <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition duration-200">
+                        Delete Librarian
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

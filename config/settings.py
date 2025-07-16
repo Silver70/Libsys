@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'borrow',
     'reservations',
     'fines',
+    'reports',
     'widget_tweaks',
 ]
 
