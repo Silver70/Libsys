@@ -128,3 +128,32 @@ def reserve_book(request, book_id):
     
     messages.success(request, f"Successfully reserved '{book.title}'. Your reservation is pending approval.")
     return redirect('library:book_detail', book_id=book_id)
+
+@login_required
+def user_reservations(request):
+    # Get reservations for the current user, ordered by created_at (newest first)
+    reservations = Reservation.objects.filter(user=request.user).order_by('-created_at')  # type: ignore
+    return render(request, 'user_reservations.html', {'reservations': reservations})
+
+@login_required
+@require_POST
+@csrf_protect
+def cancel_reservation(request, reservation_id):
+    reservation = get_object_or_404(Reservation, id=reservation_id)
+    
+    # Check if the reservation belongs to the current user
+    if reservation.user != request.user:
+        messages.error(request, "You can only cancel your own reservations.")
+        return redirect('reservations:user_reservations')
+    
+    # Check if the reservation is still pending
+    if reservation.status != 'pending':
+        messages.error(request, "Only pending reservations can be cancelled.")
+        return redirect('reservations:user_reservations')
+    
+    # Delete the reservation
+    book_title = reservation.book.title
+    reservation.delete()
+    
+    messages.success(request, f"Successfully cancelled reservation for '{book_title}'.")
+    return redirect('reservations:user_reservations')

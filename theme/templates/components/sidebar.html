@@ -33,11 +33,11 @@
                         <i class="fas fa-search text-base mr-2 {% if request.path == '/search/' %}text-indigo-600 dark:text-indigo-400{% else %}text-gray-500 dark:text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400{% endif %}"></i>
                         <span class="sidebar-text-item">Search Catalog</span>
                     </a>
-                    <a href="/reserve/" class="flex items-center px-3 py-2 text-sm font-medium rounded-md {% if request.path == '/reserve/' %}text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50{% else %}text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white{% endif %} group">
+                    <a href="{% url 'reservations:user_reservations' %}" class="flex items-center px-3 py-2 text-sm font-medium rounded-md {% if request.path == '/reserve/' %}text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50{% else %}text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white{% endif %} group">
                         <i class="fas fa-sync text-base mr-2 {% if request.path == '/reserve/' %}text-indigo-600 dark:text-indigo-400{% else %}text-gray-500 dark:text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400{% endif %}"></i>
                         <span class="sidebar-text-item">Reserve a Book</span>
                     </a>
-                    <a href="/history/" class="flex items-center px-3 py-2 text-sm font-medium rounded-md {% if request.path == '/history/' %}text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50{% else %}text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white{% endif %} group">
+                    <a href="{% url 'borrow:borrowing_history' %}" class="flex items-center px-3 py-2 text-sm font-medium rounded-md {% if request.path == '/history/' %}text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50{% else %}text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white{% endif %} group">
                         <i class="fas fa-clock text-base mr-2 {% if request.path == '/history/' %}text-indigo-600 dark:text-indigo-400{% else %}text-gray-500 dark:text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400{% endif %}"></i>
                         <span class="sidebar-text-item">Borrowing History</span>
                     </a>

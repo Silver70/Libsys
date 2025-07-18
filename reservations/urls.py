@@ -10,6 +10,8 @@ urlpatterns = [
     path('approve/confirm/<int:reservation_id>/', views.approve_reservation, name='approve_reservation'),
     path('expire/<int:reservation_id>/', views.expire_reservation_confirm, name='expire_reservation_confirm'),
     path('expire/confirm/<int:reservation_id>/', views.mark_expired, name='mark_expired'),
+    path('my-reservations/', views.user_reservations, name='user_reservations'),
+    path('cancel/<int:reservation_id>/', views.cancel_reservation, name='cancel_reservation'),
 ]
 
 

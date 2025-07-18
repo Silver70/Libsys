@@ -55,3 +55,10 @@ def borrow_book(request, book_id):
     
     messages.success(request, f"Successfully borrowed '{book.title}'. Due date: {borrowing.due_date}")
     return redirect('library:home')
+
+
+@login_required
+def borrowing_history(request):
+    # Get borrowings for the current user, ordered by borrow date (newest first)
+    borrowings = Borrowing.objects.filter(user=request.user).order_by('-borrow_date')  # type: ignore
+    return render(request, 'borrowing_history.html', {'borrowings': borrowings})

@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'reservations',
     'fines',
     'widget_tweaks',
+    'django.contrib.humanize',
 ]
 
 TAILWIND_APP_NAME = 'theme'
