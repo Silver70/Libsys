@@ -27,33 +27,57 @@ def reservation_list(request):
     return render(request, 'reservation_list.html', {'reservations': page_obj})
 
 @login_required
+def approve_reservation_confirm(request, reservation_id):
+    # Check if user is librarian
+    if request.user.role != 'librarian':
+        return HttpResponse(b'<div class="text-red-600">Access denied.</div>')
+    
+    reservation = get_object_or_404(Reservation, id=reservation_id)
+    
+    # If it's an HTMX request, return just the modal content
+    if request.headers.get('HX-Request'):
+        return render(request, 'reservation_approve_confirm.html', {'reservation': reservation})
+    
+    # For regular requests, redirect to reservation list (fallback)
+    return redirect('reservations:reservation_list')
+
+@login_required
 @require_POST
 @csrf_protect
 def approve_reservation(request, reservation_id):
     # Check if user is librarian
     if request.user.role != 'librarian':
-        return HttpResponse(b'<div class="text-red-600 text-sm">Access denied.</div>') # type: ignore
+        return HttpResponse(b'<div class="text-red-600">Access denied.</div>')
     
-    try:
-        reservation = get_object_or_404(Reservation, id=reservation_id)
-        
-        if reservation.status != 'pending':
-            return HttpResponse(b'<div class="text-red-600 text-sm">Only pending reservations can be approved.</div>') # type: ignore
-        
-        reservation.status = 'confirmed'
-        reservation.save()
-        
-        # Return the new button HTML for HTMX
-        return HttpResponse(b'''
-            <button hx-post="{request.build_absolute_uri(f'/reservations/expire/{reservation.id}/')}" 
-                    hx-target="closest td" 
-                    hx-confirm="Are you sure you want to mark this reservation as expired?"
-                    class="expire-btn bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">
-                Mark Expired
-            </button>
-        ''')
-    except Exception as e:
-        return HttpResponse(b'<div class="text-red-600 text-sm">Error: {str(e)}</div>') # type: ignore
+    reservation = get_object_or_404(Reservation, id=reservation_id)
+    
+    if reservation.status != 'pending':
+        return HttpResponse(b'<div class="text-red-600">Only pending reservations can be approved.</div>')
+    
+    reservation.status = 'confirmed'
+    reservation.save()
+    
+    # If it's an HTMX request, return the success template
+    if request.headers.get('HX-Request'):
+        return render(request, 'reservation_approve_success.html', {'reservation': reservation})
+    
+    # Otherwise, redirect normally
+    return redirect('reservations:reservation_list')
+
+@login_required
+def expire_reservation_confirm(request, reservation_id):
+    # Check if user is librarian
+    if request.user.role != 'librarian':
+        return HttpResponse(b'<div class="text-red-600">Access denied.</div>')
+    
+    reservation = get_object_or_404(Reservation, id=reservation_id)
+    
+    # If it's an HTMX request, return just the modal content
+    if request.headers.get('HX-Request'):
+        return render(request, 'reservation_expire_confirm.html', {'reservation': reservation})
+    
+    # For regular requests, redirect to reservation list (fallback)
+    return redirect('reservations:reservation_list')
 
 @login_required
 @require_POST
@@ -61,21 +85,22 @@ def approve_reservation(request, reservation_id):
 def mark_expired(request, reservation_id):
     # Check if user is librarian
     if request.user.role != 'librarian':
-        return HttpResponse(b'<div class="text-red-600 text-sm">Access denied.</div>') # type: ignore
+        return HttpResponse(b'<div class="text-red-600">Access denied.</div>')
     
-    try:
-        reservation = get_object_or_404(Reservation, id=reservation_id)
-        
-        if reservation.status != 'confirmed':
-            return HttpResponse(b'<div class="text-red-600 text-sm">Only confirmed reservations can be marked as expired.</div>') # type: ignore
-        
-        reservation.status = 'expired'
-        reservation.save()
-        
-        # Return the final state HTML for HTMX
-        return HttpResponse(b'<span class="text-gray-500 text-sm">Expired</span>') # type: ignore
-    except Exception as e:
-        return HttpResponse(b'<div class="text-red-600 text-sm">Error: {str(e)}</div>') # type: ignore
+    reservation = get_object_or_404(Reservation, id=reservation_id)
+    
+    if reservation.status != 'confirmed':
+        return HttpResponse(b'<div class="text-red-600">Only confirmed reservations can be marked as expired.</div>')
+    
+    reservation.status = 'expired'
+    reservation.save()
+    
+    # If it's an HTMX request, return the success template
+    if request.headers.get('HX-Request'):
+        return render(request, 'reservation_expire_success.html', {'reservation': reservation})
+    
+    # Otherwise, redirect normally
+    return redirect('reservations:reservation_list')
 
 # Keep the existing reserve_book function as is
 @login_required

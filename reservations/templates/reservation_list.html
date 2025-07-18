@@ -12,6 +12,65 @@
             evt.detail.headers['X-CSRFToken'] = document.querySelector('[name=csrfmiddlewaretoken]').value;
         });
     });
+
+    // Modal functionality - make functions globally accessible
+    const approveModal = document.getElementById('approveReservationModal');
+    const expireModal = document.getElementById('expireReservationModal');
+    
+    // Make functions globally accessible by attaching to window
+    window.closeApproveModal = () => {
+        approveModal.classList.add('hidden');
+        // Clear the modal content when closing
+        document.getElementById('approveReservationModalContent').innerHTML = '';
+    };
+    
+    window.closeExpireModal = () => {
+        expireModal.classList.add('hidden');
+        // Clear the modal content when closing
+        document.getElementById('expireReservationModalContent').innerHTML = '';
+    };
+    
+    const openApproveModal = (reservationId) => {
+        console.log('Opening approve modal for reservation:', reservationId);
+        // Load confirmation content via HTMX
+        htmx.ajax('GET', `/reservations/approve-confirm/${reservationId}/`, {
+            target: '#approveReservationModalContent',
+            swap: 'innerHTML'
+        }).then(() => {
+            console.log('Content loaded successfully');
+        }).catch((error) => {
+            console.error('Error loading content:', error);
+        });
+        approveModal.classList.remove('hidden');
+    };
+    
+    const openExpireModal = (reservationId) => {
+        console.log('Opening expire modal for reservation:', reservationId);
+        // Load confirmation content via HTMX
+        htmx.ajax('GET', `/reservations/expire-confirm/${reservationId}/`, {
+            target: '#expireReservationModalContent',
+            swap: 'innerHTML'
+        }).then(() => {
+            console.log('Content loaded successfully');
+        }).catch((error) => {
+            console.error('Error loading content:', error);
+        });
+        expireModal.classList.remove('hidden');
+    };
+    
+    // Close modals when pressing Escape key
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            if (!approveModal.classList.contains('hidden')) {
+                approveModal.classList.add('hidden');
+                document.getElementById('approveReservationModalContent').innerHTML = '';
+            }
+            if (!expireModal.classList.contains('hidden')) {
+                expireModal.classList.add('hidden');
+                document.getElementById('expireReservationModalContent').innerHTML = '';
+            }
+        }
+    });
 </script>
 
 <div class="container mx-auto px-4 py-8">
@@ -91,18 +150,18 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 {% if reservation.status == 'pending' %}
-                                    <button hx-post="{% url 'reservations:approve_reservation' reservation.id %}" 
-                                            hx-target="closest td" 
-                                            hx-confirm="Are you sure you want to approve this reservation?"
-                                            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                                    <button hx-get="{% url 'reservations:approve_reservation_confirm' reservation.id %}"
+                                            hx-target="#approveReservationModalContent"
+                                            hx-swap="innerHTML"
+                                            onclick="document.getElementById('approveReservationModal').classList.remove('hidden')"
                                             class="approve-btn bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm">
                                         Approve
                                     </button>
                                 {% elif reservation.status == 'confirmed' %}
-                                    <button hx-post="{% url 'reservations:mark_expired' reservation.id %}" 
-                                            hx-target="closest td" 
-                                            hx-confirm="Are you sure you want to mark this reservation as expired?"
-                                            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                                    <button hx-get="{% url 'reservations:expire_reservation_confirm' reservation.id %}"
+                                            hx-target="#expireReservationModalContent"
+                                            hx-swap="innerHTML"
+                                            onclick="document.getElementById('expireReservationModal').classList.remove('hidden')"
                                             class="expire-btn bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">
                                         Mark Expired
                                     </button>
@@ -171,5 +230,31 @@
             </div>
         </div>
     {% endif %}
+
+    <!-- Approve Reservation Modal -->
+    <div id="approveReservationModal" class="fixed inset-0 z-40 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div onclick="document.getElementById('approveReservationModal').classList.add('hidden'); document.getElementById('approveReservationModalContent').innerHTML = '';" class="fixed inset-0 bg-gray-500 opacity-75 transition-opacity z-40"></div>
+            
+            <!-- Modal content container - this is what HTMX will target -->
+            <div id="approveReservationModalContent" class="relative z-50">
+                <!-- HTMX will load content here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Expire Reservation Modal -->
+    <div id="expireReservationModal" class="fixed inset-0 z-40 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div onclick="document.getElementById('expireReservationModal').classList.add('hidden'); document.getElementById('expireReservationModalContent').innerHTML = '';" class="fixed inset-0 bg-gray-500 opacity-75 transition-opacity z-40"></div>
+            
+            <!-- Modal content container - this is what HTMX will target -->
+            <div id="expireReservationModalContent" class="relative z-50">
+                <!-- HTMX will load content here -->
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
