@@ -4,6 +4,16 @@
 {% endblock header %}
 
 {% block content %}
+{% csrf_token %}
+<script>
+    // Configure HTMX to include CSRF token in all requests
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('htmx:configRequest', function(evt) {
+            evt.detail.headers['X-CSRFToken'] = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        });
+    });
+</script>
+
 <div class="container mx-auto px-4 py-8">
     <!-- Page header banner -->
     <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg shadow-lg mb-6">
@@ -81,14 +91,23 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 {% if reservation.status == 'pending' %}
-                                    <button data-reservation-id="{{ reservation.id }}" 
-                                            class="approve-btn text-green-600 hover:text-green-900 mr-3">Approve</button>
-                                    <button data-reservation-id="{{ reservation.id }}" 
-                                            class="reject-btn text-red-600 hover:text-red-900">Reject</button>
+                                    <button hx-post="{% url 'reservations:approve_reservation' reservation.id %}" 
+                                            hx-target="closest td" 
+                                            hx-confirm="Are you sure you want to approve this reservation?"
+                                            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                                            class="approve-btn bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm">
+                                        Approve
+                                    </button>
                                 {% elif reservation.status == 'confirmed' %}
-                                    <span class="text-green-600">Approved</span>
+                                    <button hx-post="{% url 'reservations:mark_expired' reservation.id %}" 
+                                            hx-target="closest td" 
+                                            hx-confirm="Are you sure you want to mark this reservation as expired?"
+                                            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                                            class="expire-btn bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">
+                                        Mark Expired
+                                    </button>
                                 {% else %}
-                                    <span class="text-red-600">Expired</span>
+                                    <span class="text-gray-500 text-sm">Expired</span>
                                 {% endif %}
                             </td>
                         </tr>
@@ -102,33 +121,55 @@
             </div>
         {% endif %}
     </div>
+
+    <!-- Pagination -->
+    {% if reservations.has_other_pages %}
+        <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-6 rounded-lg">
+            <div class="flex-1 flex justify-between sm:hidden">
+                {% if reservations.has_previous %}
+                    <a href="?page={{ reservations.previous_page_number }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        Previous
+                    </a>
+                {% endif %}
+                {% if reservations.has_next %}
+                    <a href="?page={{ reservations.next_page_number }}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        Next
+                    </a>
+                {% endif %}
+            </div>
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-gray-700">
+                        Showing <span class="font-medium">{{ reservations.start_index }}</span> to <span class="font-medium">{{ reservations.end_index }}</span> of <span class="font-medium">{{ reservations.paginator.count }}</span> results
+                    </p>
+                </div>
+                <div>
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                        {% if reservations.has_previous %}
+                            <a href="?page={{ reservations.previous_page_number }}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                Previous
+                            </a>
+                        {% endif %}
+                        {% for num in reservations.paginator.page_range %}
+                            {% if reservations.number == num %}
+                                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-blue-50 text-sm font-medium text-blue-600">
+                                    {{ num }}
+                                </span>
+                            {% else %}
+                                <a href="?page={{ num }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                    {{ num }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                        {% if reservations.has_next %}
+                            <a href="?page={{ reservations.next_page_number }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                Next
+                            </a>
+                        {% endif %}
+                    </nav>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Add event listeners for approve buttons
-    document.querySelectorAll('.approve-btn').forEach(function(button) {
-        button.addEventListener('click', function() {
-            const reservationId = this.getAttribute('data-reservation-id');
-            if (confirm('Are you sure you want to approve this reservation?')) {
-                // TODO: Implement AJAX call to approve reservation
-                console.log('Approving reservation:', reservationId);
-                // You'll need to implement the backend endpoint for this
-            }
-        });
-    });
-
-    // Add event listeners for reject buttons
-    document.querySelectorAll('.reject-btn').forEach(function(button) {
-        button.addEventListener('click', function() {
-            const reservationId = this.getAttribute('data-reservation-id');
-            if (confirm('Are you sure you want to reject this reservation?')) {
-                // TODO: Implement AJAX call to reject reservation
-                console.log('Rejecting reservation:', reservationId);
-                // You'll need to implement the backend endpoint for this
-            }
-        });
-    });
-});
-</script>
 {% endblock %}
