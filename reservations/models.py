@@ -16,7 +16,6 @@ class Reservation(models.Model):
     book = models.ForeignKey('library.Book', on_delete=models.CASCADE)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
     type = models.CharField(max_length=20, choices=TYPE_CHOICES)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -82,16 +82,40 @@
 					{% if messages %}
 						<div class="fixed top-4 right-4 z-50 space-y-2">
 							{% for message in messages %}
-								<div class="bg-{% if message.tags == 'success' %}green{% elif message.tags == 'error' %}red{% else %}blue{% endif %}-500 text-white px-6 py-3 rounded-lg shadow-lg max-w-md">
-									<div class="flex items-center justify-between">
-										<span>{{ message }}</span>
-										<button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
-											<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-											</svg>
-										</button>
+								{% if message.tags == 'success' %}
+									<div class="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg max-w-md">
+										<div class="flex items-center justify-between">
+											<span>{{ message }}</span>
+											<button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
+												<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+												</svg>
+											</button>
+										</div>
 									</div>
-								</div>
+								{% elif message.tags == 'error' %}
+									<div class="bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg max-w-md">
+										<div class="flex items-center justify-between">
+											<span>{{ message }}</span>
+											<button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
+												<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+												</svg>
+											</button>
+										</div>
+									</div>
+								{% else %}
+									<div class="bg-blue-500 text-white px-6 py-3 rounded-lg shadow-lg max-w-md">
+										<div class="flex items-center justify-between">
+											<span>{{ message }}</span>
+											<button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
+												<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+												</svg>
+											</button>
+										</div>
+									</div>
+								{% endif %}
 							{% endfor %}
 						</div>
 					{% endif %}

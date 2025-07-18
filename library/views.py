@@ -5,6 +5,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from borrow.models import Borrowing
+from reservations.models import Reservation
 
 # Create your views here.
 def index(request):
@@ -34,11 +35,21 @@ def book_detail(request, book_id):
             book=book, 
             status__in=['borrowed', 'overdue']
         ).exists()
+
+          # Check if user already has a reservation for this book
+        # Import Reservation model at the top of the file
+        from reservations.models import Reservation
+        user_has_reservation = Reservation.objects.filter( # type: ignore
+            user=request.user,
+            book=book,
+            status__in=['pending', 'confirmed']
+        ).exists()
     
     context = {
         'book': book,
         'user_borrowed': user_borrowed,
         'book_available': book_available,
+        'user_has_reservation': user_has_reservation,
         'is_member': request.user.is_authenticated and request.user.role == 'member'
     }
     return render(request, 'librarian/book_detail.html', context)
