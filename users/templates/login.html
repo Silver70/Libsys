@@ -50,9 +50,9 @@
             <form method="post" class="space-y-6">
                 {% csrf_token %}
                 
-                <!-- Email Field -->
+                <!-- Username Field -->
                 <div>
-                    <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-[#374151] mb-2">Email</label>
+                    <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-[#374151] mb-2">Username</label>
                     {{ form.username|safe }}
                     {% if form.username.errors %}
                         <p class="text-red-500 text-xs mt-1">{{ form.username.errors.0 }}</p>

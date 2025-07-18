@@ -9,6 +9,7 @@
 		{% tailwind_css %}
 		<!-- Add Font Awesome for better icons -->
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+		<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js" integrity="sha384-Akqfrbj/HpNVo8k11SXBb6TlBWmXXlYQrCSqEWmyKJe+hDm3Z/B2WVG4smwBkRVm" crossorigin="anonymous"></script>
 	</head>
 
 	<body class="bg-gray-100 font-sans leading-normal tracking-normal">
@@ -77,6 +78,23 @@
 				{% endblock header %}
 				<!-- Page content -->
 				<main class="flex-1 relative overflow-y-auto focus:outline-none  bg-gray-50">
+					<!-- Messages -->
+					{% if messages %}
+						<div class="fixed top-4 right-4 z-50 space-y-2">
+							{% for message in messages %}
+								<div class="bg-{% if message.tags == 'success' %}green{% elif message.tags == 'error' %}red{% else %}blue{% endif %}-500 text-white px-6 py-3 rounded-lg shadow-lg max-w-md">
+									<div class="flex items-center justify-between">
+										<span>{{ message }}</span>
+										<button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
+											<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+											</svg>
+										</button>
+									</div>
+								</div>
+							{% endfor %}
+						</div>
+					{% endif %}
 					<div class=" mx-auto">
 						{% block content %}
 						{% endblock %}

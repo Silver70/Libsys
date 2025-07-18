@@ -90,8 +90,16 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <a href="{% url 'library:book_update' book.id %}" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
-                            <a href="{% url 'library:book_delete' book.id %}" class="text-red-600 hover:text-red-900">Delete</a>
+                            <button hx-get="{% url 'library:book_update' book.id %}" 
+                                    hx-target="#updateBookModalContent" 
+                                    hx-swap="innerHTML"
+                                    onclick="document.getElementById('updateBookModal').classList.remove('hidden')"
+                                    class="text-blue-600 hover:text-blue-900 mr-3">Edit</button>
+                            <button hx-get="{% url 'library:book_delete' book.id %}" 
+                                    hx-target="#deleteBookModalContent" 
+                                    hx-swap="innerHTML"
+                                    onclick="document.getElementById('deleteBookModal').classList.remove('hidden')"
+                                    class="text-red-600 hover:text-red-900">Delete</button>
                         </td>
                     </tr>
                     {% empty %}
@@ -428,30 +436,83 @@
             </div>
         </div>
     </div>
+
+      <!-- Update Book Modal -->
+      <div id="updateBookModal" class="fixed inset-0 z-40 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div onclick="closeUpdateModal()" class="fixed inset-0 bg-gray-500 opacity-75 transition-opacity z-40"></div>
+            
+            <!-- Modal content container - this is what HTMX will target -->
+            <div id="updateBookModalContent" class="relative z-50">
+                <!-- HTMX will load content here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Book Modal -->
+    <div id="deleteBookModal" class="fixed inset-0 z-40 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div onclick="closeDeleteModal()" class="fixed inset-0 bg-gray-500 opacity-75 transition-opacity z-40"></div>
+            
+            <!-- Modal content container - this is what HTMX will target -->
+            <div id="deleteBookModalContent" class="relative z-50">
+                <!-- HTMX will load content here -->
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-    // Modal functionality
-    const modal = document.getElementById('addBookModal');
-    const openModalBtn = document.getElementById('openAddBookModal');
-    const closeModalBtn = document.getElementById('closeAddBookModal');
-    const modalBackdrop = document.getElementById('modalBackdrop');
+    // Add Book Modal functionality
+    const addModal = document.getElementById('addBookModal');
+    const openAddModalBtn = document.getElementById('openAddBookModal');
+    const closeAddModalBtn = document.getElementById('closeAddBookModal');
+    const addModalBackdrop = document.getElementById('modalBackdrop');
     
-    openModalBtn.addEventListener('click', () => {
-        modal.classList.remove('hidden');
+    // Update Book Modal functionality
+    const updateModal = document.getElementById('updateBookModal');
+    
+    // Delete Book Modal functionality
+    const deleteModal = document.getElementById('deleteBookModal');
+    
+    // Add Book Modal Events
+    openAddModalBtn.addEventListener('click', () => {
+        addModal.classList.remove('hidden');
     });
     
-    const closeModal = () => {
-        modal.classList.add('hidden');
+    const closeAddModal = () => {
+        addModal.classList.add('hidden');
     };
     
-    closeModalBtn.addEventListener('click', closeModal);
-    modalBackdrop.addEventListener('click', closeModal);
+    const closeUpdateModal = () => {
+        updateModal.classList.add('hidden');
+        // Clear the modal content when closing
+        document.getElementById('updateBookModalContent').innerHTML = '';
+    };
     
-    // Close modal when pressing Escape key
+    const closeDeleteModal = () => {
+        deleteModal.classList.add('hidden');
+        // Clear the modal content when closing
+        document.getElementById('deleteBookModalContent').innerHTML = '';
+    };
+    
+    closeAddModalBtn.addEventListener('click', closeAddModal);
+    addModalBackdrop.addEventListener('click', closeAddModal);
+    
+    // Close modals when pressing Escape key
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
-            closeModal();
+        if (event.key === 'Escape') {
+            if (!addModal.classList.contains('hidden')) {
+                closeAddModal();
+            }
+            if (!updateModal.classList.contains('hidden')) {
+                closeUpdateModal();
+            }
+            if (!deleteModal.classList.contains('hidden')) {
+                closeDeleteModal();
+            }
         }
     });
 </script>

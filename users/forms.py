@@ -46,7 +46,7 @@ class UserRegistrationForm(UserCreationForm):
 class UserLoginForm(AuthenticationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'w-full h-12 px-4 py-3 border border-[#D1D5DB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF8A65] focus:border-[#FF8A65]',
-        'placeholder': 'Enter your email'
+        'placeholder': 'Enter your username'
     }))
     password = forms.CharField(widget=forms.PasswordInput(attrs={
         'class': 'w-full h-12 px-4 py-3 border border-[#D1D5DB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF8A65] focus:border-[#FF8A65]',
